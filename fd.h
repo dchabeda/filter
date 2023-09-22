@@ -150,7 +150,7 @@ void writeCurrentTime(FILE *pf);
 void writeSeparation(FILE *pf);
 
 void calc_sigma_E(zomplex *psi,zomplex *phi,double *psitot,double *potl,double *ksqr,double *eval,long_st ist,par_st par,fftw_plan_loc planfw,fftw_plan_loc planbw,fftw_complex *fftwpsi);
-void getDeloc(double *psitot, double **newpsitot, long nstates, double *vx, double *vy, double *vz, double *eval, par_st par, long_st *ist);
+void getDeloc(double *psitot, double *newpsitot, long nstates, double *vx, double *vy, double *vz, double *eval, par_st par, long_st *ist);
 xyz_st calc_dipole(long i,long a,double *vx,double *vy,double *vz,double *psitot,long_st ist,par_st par);
 
 double expot(double r,pot_st ppar);
