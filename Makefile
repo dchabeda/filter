@@ -22,7 +22,7 @@ Linux_LD = icx
 
 OBJECTS = \
 	main.o write.o init.o size.o norm.o nerror.o coeff.o read.o interpolate.o \
-	ortho.o energy.o hamiltonian.o hnorm.o filter.o Hmat.o dipole.o rand.o
+	ortho.o energy.o hamiltonian.o hnorm.o filter.o Hmat.o dipole.o rand.o dr2.o
 
 # compilation ...
 .f.o:
