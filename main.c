@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
   printf("done calculating filter, CPU time (sec) %g, wall run time (sec) %g\n",
     ((double)clock()-tci)/(double)(CLOCKS_PER_SEC), (double)time(NULL)-twi); fflush(0);
   
-  if (par->saveChk == 1) printf("\n\nChk1\n\n");
+  //if (par->saveChk == 1) printf("\n\nChk1\n\n");
   /*************************************************************************/
   /*** read all filtered states ***/
   /*ppsi = fopen("psi-filt.dat" , "r");
@@ -198,7 +198,7 @@ int main(int argc, char *argv[]) {
   fwrite(psitot, sizeof(double), ist.mstot*ist.ngrid, ppsi);
   fclose(ppsi);
   printf("Done writing psi\n"); fflush(0);
-  if (par->saveChk == 1) printf("\n\nChk2\n\n");
+  //if (par->saveChk == 1) printf("\n\nChk2\n\n");
   /*** calculate the standard deviation of these states ***/
   /*** this is used to check if there are ghost states ***/
   calc_sigma_E(psi, phi, psitot, potl, ksqr, sige, ist, par, planfw, planbw, fftwpsi);
