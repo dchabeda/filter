@@ -32,10 +32,10 @@ void read_conf(double *rx, double *ry, double *rz, atm_st *atm, long ntot, FILE 
 
   pw = fopen("conf.dat" , "w");
   fprintf(pw, "%ld\n", ntot);
-  printf("%ld\n\n", ntot);
+  //printf("%ld\n\n", ntot);
   for (i = 0; i < ntot; i++) {
     fprintf(pw, "%s %g %g %g\n", atm[i].atyp, rx[i], ry[i], rz[i]);
-    printf("%s %g %g %g\n", atm[i].atyp, rx[i], ry[i], rz[i]);
+    //printf("%s %g %g %g\n", atm[i].atyp, rx[i], ry[i], rz[i]);
   }
   fclose(pw);
   
@@ -91,7 +91,7 @@ void read_pot(double *vr, double *pot, long *npot, double *dr, atm_st *atm, long
     fclose(pf);
   }
 
-  fprintf(stdout, "ntype = %ld\n", ntype);
+  //fprintf(stdout, "ntype = %ld\n", ntype);
 
   for (j = 0; j < ntype*n; j++) pot[j] = vr[j] = 0;
   for (j = 0; j < ntype; j++) npot[j] = 0;

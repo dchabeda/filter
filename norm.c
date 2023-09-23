@@ -47,7 +47,7 @@ void normalize_all(double *psi,double dr,long ms,long ngrid,long nthreads)
 #pragma omp parallel for private(ie,nrm,ieg,i)
   for (ie = 0; ie < ms; ie++){
     for (ieg = ie * ngrid, nrm = 0.0, i = 0; i < ngrid; i++) nrm += sqr(psi[ieg+i]);
-    printf("The normalization constant %g\n", 1.0/sqrt(nrm*dr));fflush(0);
+    // printf("The normalization constant %g\n", 1.0/sqrt(nrm*dr));fflush(0);
     if (nrm != 0.0) nrm = 1.0 / sqrt(nrm * dr);
     for (ieg = ie * ngrid, i = 0; i < ngrid; i++) psi[ieg+i] *= nrm;
   }

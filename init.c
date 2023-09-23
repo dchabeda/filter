@@ -225,7 +225,7 @@ void init(double *potl,double *vx,double *vy,double *vz,double *ksqr,double *rx,
   par->dE = 0.5 * sqr(PIE) / (mx*par->dx*par->dx) +
     0.5 * sqr(PIE) / (my*par->dy*par->dy) +    
     0.5 * sqr(PIE) / (mz*par->dz*par->dz);
-  printf("dT = %g\n", par->dE);
+  printf("Energy separation for kinetic energy, dT = %g\n", par->dE);
   
   /*** setting the energy grid El ***/
   range = (par->CBmax - par->CBmin)+(par->VBmax - par->VBmin);
@@ -234,12 +234,12 @@ void init(double *potl,double *vx,double *vy,double *vz,double *ksqr,double *rx,
   msVB = ist->ms-msCB;
   if(msCB<1 || msVB<1){printf("error: init egrid\n"); fflush(0);exit(EXIT_FAILURE);}
   del = (par->VBmax - par->VBmin)/(double)msVB;
-  printf("Del VB: %lg\n", del);
+  printf("Spacing between states in VB: %lg\n", del);
   for (jx = 0; jx < msVB; jx++) {
     eval[jx] = par->VBmin + (double)(jx) * del;
   }
   del = (par->CBmax - par->CBmin)/(double)msCB;
-  printf("Del CB: %lg\n", del);
+  printf("Spacing between states in CB: %lg\n", del);
   for (jx = msVB; jx < ist->ms; jx++) {
     eval[jx] = par->CBmin + (double)(jx-msVB) * del;
   }
@@ -260,7 +260,7 @@ void init(double *potl,double *vx,double *vy,double *vz,double *ksqr,double *rx,
       nn++;
     }
   }
-  printf("nn = %ld\n",nn);
+  //printf("nn = %ld\n",nn);
   ist->homo = 4*nn-1;
   ist->lumo = ist->homo+1;
   printf("homo = %ld lumo = %ld\n",ist->homo,ist->lumo);

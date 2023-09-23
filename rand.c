@@ -27,7 +27,7 @@
 
 double ran_nrc(long *idum)
 {
-  long    j;
+  long   j;
   long   k;
   static long idum2 = 123456789;
   static long iy = 0;

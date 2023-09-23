@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
   /*** read initial setup from input.par ***/
   writeCurrentTime(stdout);
   writeSeparation(stdout);
+  printf("INITIALIZING JOB SPECIFICATIONS\n\n");
   init_size(argc,argv,&par,&ist);
   
   /*************************************************************************/
@@ -26,8 +27,8 @@ int main(int argc, char *argv[]) {
 
   fftwpsi = fftw_malloc(sizeof (fftw_complex )*ist.ngrid);
   //if ((fftwpsi  = (fftw_complex*)calloc(ist.ngrid,sizeof(fftw_complex)))==NULL)nerror("fftwpsi");
-  if ((psi   = (zomplex*)calloc(ist.ngrid,sizeof(zomplex)))==NULL)nerror("psi");
-  if ((phi   = (zomplex*)calloc(ist.ngrid,sizeof(zomplex)))==NULL)nerror("phi");
+  if ((psi   = (zomplex *)calloc(ist.ngrid,sizeof(*psi)))==NULL)nerror("psi");
+  if ((phi   = (zomplex *)calloc(ist.ngrid,sizeof(*phi)))==NULL)nerror("phi");
   /*** the pseudopotential stored on the grid ***/
   if ((potl  = (double*)calloc(ist.ngrid,sizeof(double)))==NULL)nerror("potl");
   /*** the kinetic energy stored on the grid ***/
@@ -53,6 +54,8 @@ int main(int argc, char *argv[]) {
   /**************************************************************************/
   /*** initialize the pseudopotential, the kinetic energy, ***/
   /*** the fourier transorm, the grid, and the energy window ***/
+  writeSeparation(stdout);
+  printf("INITIALIZING GRID AND POTENTIAL\n\n");fflush(0);
   init(potl,vx,vy,vz,ksqr,rx,ry,rz,atm,&par,el,&ist,&planfw,&planbw,fftwpsi);
   
   /*** Write local potential cube file for visualization***/
@@ -64,15 +67,19 @@ int main(int argc, char *argv[]) {
   
   /**************************************************************************/
   /*** calcualte the energy range of the hamitonian ***/
+  writeSeparation(stdout);
+  printf("CALCULATING ENERGY RANGE OF HAMILTONIAN\n\n");fflush(0);
   tci = (double)clock(); twi = (double)time(NULL);
   get_energy_range(psi,phi,potl,vx,vy,vz,ksqr,&par,ist,planfw,planbw,fftwpsi);
   printf("done calculate energy range, CPU time (sec) %g, wall run time (sec) %g\n",
     ((double)clock()-tci)/(double)(CLOCKS_PER_SEC), (double)time(NULL)-twi); fflush(0);
   
+  writeSeparation(stdout);
+  printf("FILTERING\n\n");fflush(0);
   /**************************************************************************/
   /*** set parameters for the newton interpolation ***/
   par.dt = sqr((double)(ist.nc) / (2.5 * par.dE));
-  printf ("nc = %ld dt = %g dE = %g\n",ist.nc,par.dt,par.dE); fflush(0);
+  printf ("nChebyshev = %ld dt = %g dE = %g\n",ist.nc,par.dt,par.dE); fflush(0);
   an = (zomplex*)calloc(ist.nc*ist.ms,sizeof(zomplex));
   zn = (double*)calloc(ist.nc,sizeof(double));
   coefficient(an,zn,el,par,ist);
@@ -111,6 +118,8 @@ int main(int argc, char *argv[]) {
   fclose(ppsi);*/
 
   /*** orthogonalize and normalize the filtered states using an svd routine ***/
+  writeSeparation(stdout);
+  printf("ORTHGONALIZING FILTERED STATES\n\n");fflush(0);
   tci = (double)clock(); twi = (double)time(NULL);
   ist.mstot = portho(psitot,par.dv,ist);
   printf("mstot ortho = %ld\n", ist.mstot); fflush(0);
@@ -122,6 +131,8 @@ int main(int argc, char *argv[]) {
   /*** diagonalize the hamiltonian in the subspace spanned by the ***/
   /*** orthogonal filtered states. generate the eigenstates of the ***/
   /*** hamitonian within the desired energy reange ***/
+  writeSeparation(stdout);
+  printf("DIAGONALIZING HAMILTONIAN\n\n");fflush(0);
   tci = (double)clock(); twi = (double)time(NULL);
   Hmatreal(psi, phi, psitot, potl, ksqr, eval,ist, par, planfw, planbw, fftwpsi);
   normalize_all(psitot, par.dv, ist.mstot, ist.ngrid, ist.nthreads);
@@ -141,7 +152,7 @@ int main(int argc, char *argv[]) {
     long mstot;
     double *selectpsitot;
     long VBmindex, CBmaxdex, nstates;
-
+    writeSeparation(stdout);
     tci = (double)clock(); twi = (double)time(NULL);
     printf("\nCalculating delocalization as <dr^2>...\n"); fflush(0);
     
@@ -193,6 +204,8 @@ int main(int argc, char *argv[]) {
     ((double)clock()-tci)/(double)(CLOCKS_PER_SEC), (double)time(NULL)-twi); fflush(0);
   }
 
+  writeSeparation(stdout);
+  printf("WRITING PSI, EVAL, CUBE FILES\n\n");fflush(0);
   /*** write the eigenstates to a file ***/
   ppsi = fopen("psi.dat", "w");
   fwrite(psitot, sizeof(double), ist.mstot*ist.ngrid, ppsi);
@@ -258,7 +271,7 @@ int main(int argc, char *argv[]) {
 
   free(rho);
   printf("done calculating cubes, CPU time (sec) %g, wall run time (sec) %g\n",
-    ((double)clock()-tci)/(double)(CLOCKS_PER_SEC), (double)time(NULL)-twi);
+    ((double)clock()-tci)/(double)(CLOCKS_PER_SEC), (double)time(NULL)-twi);fflush(0);
   
   /*************************************************************************/
   /*** free memeory ***/
@@ -273,6 +286,7 @@ int main(int argc, char *argv[]) {
   /*************************************************************************/
   /*** Print out the time that the computation finished ***/
   writeSeparation(stdout);
+  printf("EXITING PROGRAM: FILTER DIAGONALIZATION\n");fflush(0);
   writeCurrentTime(stdout);
 
   /*************************************************************************/

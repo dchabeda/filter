@@ -6,7 +6,7 @@ void getOverlap(double *psitot, double *eval, ipr_st *ipr,double *vx, double *vy
     long jms, jgrid, count, iatom;
     double sum;
     double *newpsitot, *rho;
-    zomplex *gausspsi;
+    double *gausspsi;
     ipr_st *iprcut;
 
     newpsitot = calloc(ist->ngrid*ist->iprcut, sizeof(double));
@@ -17,8 +17,7 @@ void getOverlap(double *psitot, double *eval, ipr_st *ipr,double *vx, double *vy
     for (iatom = 0; iatom < ist->natom; iatom++){
         for (jgrid = 0; jgrid < ist->ngrid; jgrid++){
             sum = sqr(vx[jgrid] - rx[iatom]) + sqr(vy[jgrid] - ry[iatom]) + sqr(vz[jgrid] - rz[iatom]);
-            gausspsi[jgrid].re = exp(-0.5 * sum);
-            gausspsi[jgrid].im = 0;
+            gausspsi[jgrid] = exp(-0.5 * sum);
         }
     }
 

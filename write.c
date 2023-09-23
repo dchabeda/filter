@@ -13,7 +13,7 @@ void writeCurrentTime(FILE *pf) {
   time_t startTime;
 
   startTime = time(NULL);
-  fprintf(pf, ctime(&startTime));
+  fprintf(pf, "%s", ctime(&startTime));
 
   return;
 }
