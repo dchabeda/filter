@@ -25,7 +25,8 @@ typedef struct st1 {
   double xmin, xmax, ymin, ymax, zmin, zmax;
   double Vmin, Vmax, dE, dE_1, VBmin, VBmax, CBmin, CBmax, Ekinmax;
   double fermiEnergy, deps;
-  int setdGridFlag, getDelocFlag;
+  int setdGridFlag, getDelocFlag, setms, setFermiEnergy;
+  long msVB, msCB;
 } par_st;
 
 typedef struct st4 {

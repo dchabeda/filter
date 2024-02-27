@@ -25,14 +25,22 @@ void init_size(long argc, char *argv[],par_st *par,long_st *ist)
   if (par->setdGridFlag == 1){
     fscanf (pf, "%lg %lg %lg", &par->dx, &par->dy, &par->dz);
   }
-  fscanf (pf,"%d", &par->getDelocFlag); if (par->getDelocFlag == 1) printf("\ngetDelocFlag on!\n\n");
+  fscanf (pf,"%d",&par->setms);
+  if (par->setms == 1){
+    // Allows you to set how many energy targets are placed in the valence and conduction bands separately
+    fscanf (pf, "%ld %ld", &par->msVB, &par->msCB); 
+    printf("Setting energy targets separately for VB and CB, msVB = %ld msCB = %lg\n", par->msVB, par->msCB);
+  }
+  fscanf (pf,"%d %g", &par->setFermiEnergy, &par->fermiEnergy); 
+  if (par->setFermiEnergy == 1) printf("\nSetting Fermi energy to %g!\n\n", par->fermiEnergy);
+  else {par->fermiEnergy = -0.180;}
   fclose(pf);
   
   pf = fopen("conf.par" , "r");
   fscanf(pf,"%ld",&ist->natom);
   fclose(pf);
 
-  par->fermiEnergy = -0.180;
+  
   ist->npot = 8192;
   par->Ekinmax = 10.0;  
   ist->nx_1 = 1.0 / (double)(ist->nx);
@@ -45,7 +53,7 @@ void init_size(long argc, char *argv[],par_st *par,long_st *ist)
 
   printf("Number of atoms in the system, natom = %ld\n", ist->natom);
   printf("Number of grid points used: nx = %ld  ny = %ld  nz = %ld\n", ist->nx, ist->ny, ist->nz);
-  printf("Number of states per filter, ms = %ld\nNumber of filter cycles, ns = %ld\n", ist->ms, ist->ns);
+  printf("Total number of states per filter, ms = %ld\nNumber of filter cycles, ns = %ld\n", ist->ms, ist->ns);
   printf("Length of Newton interpolation used, nc = %ld\n", ist->nc);
   printf("VBmin = %lg\t, VBmzx=%lg\n", par->VBmin, par->VBmax);
   printf("CBmin = %lg\t, CBmzx=%lg\n", par->CBmin, par->CBmax);
@@ -60,7 +68,7 @@ void init_size(long argc, char *argv[],par_st *par,long_st *ist)
 void init(double *potl,double *vx,double *vy,double *vz,double *ksqr,double *rx,double *ry,double *rz,atm_st *atm,par_st *par,double *eval,long_st *ist,fftw_plan_loc *planfw,fftw_plan_loc *planbw,fftw_complex *fftwpsi)
 {
   FILE *pf, *pfs; pot_st ppar;
-  long jx, jy, jz, jyz, jxyz, ie, ntot, jp, *npot, nn, msVB, msCB, flags=0, ii;
+  long jx, jy, jz, jyz, jxyz, ie, ntot, jp, *npot, nn, flags=0, ii;
   double range, del, mx, my, mz, xd, yd, zd, dx, dy, dz, *ksqrx, *ksqry, *ksqrz;
   double *vr, *potatom, *dr, sum, rex, potEx;
 
@@ -230,18 +238,20 @@ void init(double *potl,double *vx,double *vy,double *vz,double *ksqr,double *rx,
   /*** setting the energy grid El ***/
   range = (par->CBmax - par->CBmin)+(par->VBmax - par->VBmin);
   //msCB = (long) ((double)ist->ms * (par->CBmax - par->CBmin)/range);
-  msCB = ist->ms/2;
-  msVB = ist->ms-msCB;
-  if(msCB<1 || msVB<1){printf("error: init egrid\n"); fflush(0);exit(EXIT_FAILURE);}
-  del = (par->VBmax - par->VBmin)/(double)msVB;
+  if (par->setms != 1){
+  par->msCB = ist->ms / 2;
+  par->msVB = ist->ms - par->msCB;
+  }
+  if(par->msCB<1 || par->msVB<1){printf("error: init egrid\n"); fflush(0);exit(EXIT_FAILURE);}
+  del = (par->VBmax - par->VBmin)/(double)par->msVB;
   printf("Spacing between states in VB: %lg\n", del);
-  for (jx = 0; jx < msVB; jx++) {
+  for (jx = 0; jx < par->msVB; jx++) {
     eval[jx] = par->VBmin + (double)(jx) * del;
   }
-  del = (par->CBmax - par->CBmin)/(double)msCB;
+  del = (par->CBmax - par->CBmin)/(double)par->msCB;
   printf("Spacing between states in CB: %lg\n", del);
-  for (jx = msVB; jx < ist->ms; jx++) {
-    eval[jx] = par->CBmin + (double)(jx-msVB) * del;
+  for (jx = par->msVB; jx < ist->ms; jx++) {
+    eval[jx] = par->CBmin + (double)(jx-par->msVB) * del;
   }
 
   for (pf = fopen("Egrid.dat","w"),jx = 0; jx < ist->ms; jx++) {
